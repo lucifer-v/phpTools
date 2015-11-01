@@ -238,7 +238,7 @@ function isIncludeUtf8Cn( $_str ){
 *验证规则：总长度(不包括点号)不超过_totalLen, 小数位数不超过_decLen即视为合法
 *@author lucifer-v.
 *@date2015/10/05 17:37
-*@lastmodify 2015/11/01 10:42
+*@lastmodify 2015/11/01 12:39
 *
 *@param string _decimal 待验证其合法性的定点数
 *@param int _totalLen 允许的定点数总长度(不包括小数点)
@@ -257,7 +257,10 @@ function isDecimalValid( $_decimal, $_totalLen, $_decLen ){
 		if(  $hasDot ){		//如果含有小数
 				$decComps = explode('.', $_decimal);
 				$facLen = min($_decLen, strlen($decComps[1]));		//实际的小数位数
-				$pattern = '/^\d{1,'.($_totalLen - $facLen).'}.\d{1,'.$facLen.'}$/';
+				if( 0 == $facLen){		//考虑到实时输入是会出现'12.'的情况
+						return false;
+				}
+				$pattern = '/^\d{1,'.($_totalLen - $facLen).'}\.\d{1,'.$facLen.'}$/';
 		}
 
 		return ( preg_match($pattern, $_decimal) > 0 ) ? true : false;
