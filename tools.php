@@ -238,6 +238,7 @@ function isIncludeUtf8Cn( $_str ){
 *验证规则：总长度(不包括点号)不超过_totalLen, 小数位数不超过_decLen即视为合法
 *@author lucifer-v.
 *@date2015/10/05 17:37
+*@lastmodify 2015/11/01 10:42
 *
 *@param string _decimal 待验证其合法性的定点数
 *@param int _totalLen 允许的定点数总长度(不包括小数点)
@@ -245,9 +246,11 @@ function isIncludeUtf8Cn( $_str ){
 *@return true / false
 */
 function isDecimalValid( $_decimal, $_totalLen, $_decLen ){
-		//参数不合法则返回false
+		//参数长度不合法则返回false
 		if( $_totalLen <= $_decLen ) return false;
-
+		//如果含有除数字和.以外的字符，返回false
+		if( preg_match( '/[^0-9.]/', $_decimal ) ) return false;
+		
 		$hasDot = (false === strpos($_decimal, '.')) ? false: true ;		//是否是小数
 
 		$pattern = '/^\d{1,'.$_totalLen.'}$/';		//如果是整数的情况
