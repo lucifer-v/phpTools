@@ -16,6 +16,7 @@
 1.	getCnWeekName( $_timeStamp )
 2.	datastrf( $_datestr, $_delim = '/' )
 3.	getMicrotime()
+4.	getIntMicrotime()
 
 
 ##文件/目录/路径处理扩展
