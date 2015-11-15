@@ -365,7 +365,7 @@ function isMobilephoneValid( $_phonenum ){
 
 ######### 日期/时间扩展 ##########
 /***
-*得到时间戳，包含毫秒
+*得到时间戳，包含毫秒(但是毫秒以小数形式出现)
 *
 *@date  2015/10/28
 *@apply 用于测试代码执行时间 
@@ -376,6 +376,18 @@ function getMicrotime(){
 		list($microSec, $sec) = explode(' ', microtime());
 		return $sec + $microSec;
 }//getMicrotime
+
+/***
+*得到时间戳(精确到0.1毫秒)
+*
+*@date 2015/11/16
+*
+*@return int 当前时间戳
+*/
+function getIntMicrotime(){
+		list($microSec, $sec) = explode(' ', microtime());
+		return ($sec + $microSec)*10000;
+}//getIntMicrotime
 
 /** 
   *根据时间戳得到中文的星期  

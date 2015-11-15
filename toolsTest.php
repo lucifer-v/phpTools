@@ -455,8 +455,13 @@ dumpf( datestrf('89kdsjfoi', '/') );
 dumpf( datestrf('20130818', '-') );
 **/
 
-/** 29. getMicrotime
+/** 29. getMicrotime 
 echo getMicrotime(), "<br />";
 sleep(1);
-echo getMicrotime();
- **/
+echo getMicrotime(), "<br />";**/
+
+
+ /** 30. getIntMicrotime 
+ echo getIntMicrotime(), "<br />";
+ sleep(1);
+ echo getIntMicrotime(); **/
