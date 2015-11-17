@@ -737,3 +737,38 @@ function aryRearrangeUncert( $_argAry ){
     }
     return $retAry;
 }//func
+
+########### SQL语句处理 #############
+/**
+*将离散且有序的字段值转换为 " field in ('val1', 'val2', 'val3') "的形式
+*获得的字符串便于组织为SQL语句中的条件语句
+*
+*@date 2015/11/17 23:50
+*
+*scenario:如下拉列表选项值为'A','B','C','D','E'，选取field在 'B'到'D'之间的
+*@param string _fieldName 字段名
+*@param array _optsAry 字段取值数组
+*@param string _optFrom 字段索引数组中的起始元素值(按数值索引升序)
+*@param string _optTo 字段索引数组中的起始元素值(按数值索引升序)
+*@return string 
+*			如果 参数有误，返回""
+*			如果 from参数和to参数一致，返回 field='val'
+*			如果 from参数和to参数正常，返回 field in ('val1', 'val2', 'val3') 的条件查询语句							
+*/
+function buildInCondiStr($_fieldName, $_optsAry, $_optFrom, $_optTo){
+		if( 0 == count( $_optsAry ) || "" == $_optFrom || "" == $_optTo)	return ""; 
+
+		if( $_optFrom == $_optTo)		//特殊情况，只有一个值时
+				return " {$_fieldName}='{$_optFrom}' ";
+		
+		//一般情况
+		$tmpAry = array();
+		foreach( $_optsAry as $item ){
+				//找到数组中的_optFrom项, 0==count() 是因为从找到开始的元素后就不continue了
+				if( 0 == count($tmpAry) && $item != $_optFrom )	 continue; 
+				$tmpAry[] = "'" . $item . "'";
+				if( $item == $_optTo ) break;
+		}//foreach			
+
+		return " {$_fieldName} in (" . implode(',', $tmpAry)." ) ";
+}//buildInCondiStr

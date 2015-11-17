@@ -465,3 +465,13 @@ echo getMicrotime(), "<br />";**/
  echo getIntMicrotime(), "<br />";
  sleep(1);
  echo getIntMicrotime(); **/
+
+ /** 31. buildInCondiStr 
+ $optsAry = array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H');
+ //from和to不一样
+ $optFrom = 'C';  $optTo = 'G';
+ dumpf( buildInCondiStr('char', $optsAry, $optFrom, $optTo) );
+ //from和to一样
+  $optFrom = 'C';  $optTo = 'C';
+ dumpf( buildInCondiStr('char', $optsAry, $optFrom, $optTo) );
+ **/

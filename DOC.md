@@ -19,7 +19,7 @@
 4.	getIntMicrotime()
 
 ##SQL语句处理
-1. 
+1. buildInCondiStr( $_fieldName,$_optsAry,$_optFrom, $_optTo )
 
 
 ##文件/目录/路径处理扩展
