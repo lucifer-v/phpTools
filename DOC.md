@@ -18,6 +18,9 @@
 3.	getMicrotime()
 4.	getIntMicrotime()
 
+##SQL语句处理
+1. 
+
 
 ##文件/目录/路径处理扩展
 1.	getBasename( $_uri )  
