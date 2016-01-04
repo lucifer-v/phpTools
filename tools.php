@@ -1,4 +1,241 @@
 <?php
+#########
+#changelog 2015/12/29 11:09 为multiJoinAryElements()增加_delimiter=null的情况,此中情况表示，将checkbox的数值相加求和，
+#          而不是用某个连接符连接起来
+#changelog 增加数组函数 turnPartsToWhole()
+#changelog 为utf8中文检测 添加上\uF900-\uFA2D
+
+######### to be extended #########
+
+/***
+ * 验证给定的字符串是否是是实数
+ * @date 2015/12/29
+ *
+ * @param $_str 待验证字符串
+ * @return bool
+ */
+function isReal( $_str ){
+    $pattern = '/^(\d+|\d+\.\d+|\.\d+)$/';
+    return ( preg_match( $pattern, $_str ) > 0 )? true : false ;
+}
+
+/***
+ * 为个位数的小时和分钟，左侧补零
+ * @date 2015/12/28 16:23
+ *
+ * @param $_mOrh 分钟或小时
+ * @return string
+ */
+function timePadZero( $_mOrh ){
+    $_mOrh = intVal( trim($_mOrh) );
+    if( $_mOrh < 10 ){
+        return '0'.$_mOrh;
+    }
+    return $_mOrh;
+}//func
+
+/***
+ * 如果两个值相等，则返回'selected="selected"',否则返回false
+ * @date 2015/12/28 16:38
+ * @apply 用于下拉列表选中
+ *
+ * @param $_optVal
+ * @param $_giveVal
+ */
+function eqThenSelected( $_optVal, $_givenVal ){
+
+    if( $_optVal == $_givenVal ){
+        return 'selected="selected"';
+    }
+    return "";
+}//func
+
+/***
+ * 根据位掩码的值进行checkbox的选中，检测bitVal是否在totalVal中
+ * @date 2015/12/28
+ * @apply 选中checkbox
+ *
+ * @param $_totalVal 某个字段的各个位掩码当前值
+ * @param $_bitVal 待检测的某个位掩码值
+ * @return string
+ */
+function bitmaskEqThenChecked( $_totalVal, $_bitVal ){
+
+    $_totalVal = intVal( $_totalVal );
+    $_bitVal = intVal( $_bitVal );
+
+    if( $_bitVal & $_totalVal ){    //如果含有此掩码
+        return 'checked="checked"';
+    }
+    return '';
+}//func
+
+/***
+ * 如果在字符串$_haystack中找到了子字符串$_needle，那么返回'checked="checked"'，否则返回""
+ * @date 2015/12/28
+ * @apply 用于模版中的复选框/单选框选中
+ *
+ * @param $_haystack
+ * @param $_needle
+ * @param $_deliemiter checkbox值连接符
+ * @return string
+ */
+function hasThenChecked( $_haystack, $_needle, $_delimiter = "" ){
+
+    $_haystack = $_delimiter . $_haystack . $_delimiter;
+    $_needle = $_delimiter . $_needle . $_delimiter;
+
+    if( false === strpos( $_haystack, $_needle ) ){
+        return "";
+    }
+    return 'checked="checked"';
+}//func
+
+/***
+ * 如果给定的值为空，则显示替换字符串'_toPrint'，否则显示给定的值
+ * @date 2015/12/28 14:13
+ * @apply 模版中统一化显示为空的字段
+ *
+ * @param _str {string} 但检测的字符串
+ * @param _toPrint {string} 如果待检测的字符串为空，则显示此字符串
+ * @return string
+ */
+function emptyThenPrint( $_str, $_toPrint ){
+    if('' === trim($_str)){
+        return $_toPrint;
+    }
+    return trim($_str);
+}
+
+/***
+ * 将给定数组中，指定字段对应的元素为数组的，将此数组的元素以某个分隔符连接起来
+ * @date 2015/12/28 13:03
+ * @modify 2015/12/29 11:09
+ * @apply ajax提交时，对表单复选框的值进行处理
+ *
+ * @param $_srcAssocAry {2D array} 将要处理的原数组
+ * @param $_fieldAry {array} 将要处理的字段列表
+ * @param string {string} $_delimiter, 如果$_delimiter显式地为null,那么将各个值当作数值相加
+ * @return mixed {2D array} 经过处理的数组
+ */
+function multiJoinAryElements( $_srcAssocAry, $_fieldAry , $_delimiter = ";" ){
+
+    foreach( $_fieldAry as $field ){
+        if( isset($_srcAssocAry[$field]) && !is_array($_srcAssocAry[$field]) ){
+            continue;
+        }
+        if( false == isset($_srcAssocAry[$field]) ){
+            $_srcAssocAry[$field] = "";
+            continue;
+        }
+
+        if( null === $_delimeter ){     //求和
+            $_srcAssocAry[$field] = array_sum( $_srcAssocAry[$field] );
+        }else{  //拼凑
+            $_srcAssocAry[$field] = implode($_delimiter, $_srcAssocAry[$field]);
+        }
+    }//foreach
+    return $_srcAssocAry;
+}//func
+
+/***
+ * 将字段值的集合组合成对象的集合(每个对象包含有一副完整的字段)
+ * @data 2015/12/23 11:14
+ * @param $_assocAry {2D Array}
+ * @return mixed {2D Array} 每个元素是一个包含所有给定字段的'元素'
+ */
+function turnPartsToWhole( $_assocAry ){
+
+    $retVal = array();
+    foreach( $_assocAry as $field => $valSet ){
+        foreach( $valSet as $index => $val ){
+            $retVal[$index][$field] = $val;
+        }
+    }//foreach
+    return $retVal;
+}
+
+/**
+ * 在dumpf的基础上添加了exit;作为结尾
+ * @date 2015/12/16 10:02
+ */
+function dumpfe(){
+    foreach( func_get_args() as $arg ){
+        echo "<pre>";
+        var_dump( $arg );
+        echo "</pre>";
+    }
+    exit;
+}
+
+/**
+ * 检测字符串是否全部是utf8中文字编码(且不能为空)
+ * @date 2015/12/22 09:56
+ * @param $_str 待检测字符串
+ * @return bool true :  如果是, false : 如果不是
+ */
+function isAllUtf8Cn( $_str ){
+    $pattern = '/^[\x{4e00}-\x{9fa5}]+$/u';
+    return ( preg_match( $pattern, $_str ) > 0 )? true : false ;
+}
+
+/**
+ * 检测字符串是否是台湾座机或传真区号
+ * @date 2015/12/23 14:08
+ * @param $_str 待检测字符串
+ * @return bool true :  如果是, false : 如果不是
+ */
+function isTWPhoneOrFaxAreaCode( $_str ){
+    $pattern = '/^0\d{1,2}$/';
+    return ( preg_match( $pattern, $_str ) > 0 )? true : false ;
+}
+
+/**
+ * 检测字符串是否是台湾座机或传真号码
+ * @date 2015/12/23 14:09
+ * @param $_str 待检测字符串
+ * @return bool true :  如果是, false : 如果不是
+ */
+function isTWPhoneOrFaxNumber( $_str ){
+    $pattern = '/^\d{6,8}$/';
+    return ( preg_match( $pattern, $_str ) > 0 )? true : false ;
+}
+
+/**
+ * 检测字符串是否是台湾移动电话号码
+ * @date 2015/12/23 14:09
+ * @param $_str 待检测字符串
+ * @return bool true :  如果是, false : 如果不是
+ */
+function isTWMobilePhone( $_str ){
+    $pattern = '/^09\d{8}$/';
+    return ( preg_match( $pattern, $_str ) > 0 )? true : false ;
+}
+
+/**
+ * 检测字符串是否全部是由下划线和字母组成(包含空格)(且不能为空)
+ * @date 2015/12/22 10:09
+ * @param $_str 待检测字符串
+ * @return bool true :  如果是, false : 如果不是
+ */
+function isAllUnderscoreAndAlpha( $_str ){
+    $pattern = '/^[_ a-zA-Z]+$/';
+    return ( preg_match( $pattern, $_str ) > 0 )? true : false ;
+}
+
+######## end to be extended ####
+
+/**
+ * 为给定的字符串添加随机字符串
+ * 随机字符串由time()+6位的随机字母/数字串组成
+ *
+ * @date 2015/12/14 14:03
+ * @apply 防止缓存时，在url后增加的随机字符串，例如_str部分通常为picurl,_prefix为'?_='
+ */
+function appendRandStr( $_str = "", $_prefix = "" ){
+    return $_str.$_prefix.time().getRandStr(6);
+}
+
 ######### 数值操作扩展 #########
 /**
  *检测两个实数区间是否相交
@@ -225,13 +462,15 @@ function hHirarchify( $_list, $_pid = 0, $_level = 0, $_excludeIds = array(),
  *
  *@param string _str 待检测的字符串
  *@return boolean true :  如果含有
- *									   false : 如果不含有
+ *				 false : 如果不含有
  */
 function isIncludeUtf8Cn( $_str ){
 
 		$pattern = '/[\x{4e00}-\x{9fa5}]/u';
 		return ( preg_match( $pattern, $_str ) > 0 )? true : false ;
 }//func
+
+
 
 /**
 *验证给定的定点数是否合法
@@ -458,11 +697,11 @@ function swap(&$_var1, &$_var2){
 */
 function dumpf(  ){
 		
-		foreach( func_get_args() as $arg ){
-				echo "<pre>";
-				var_dump( $arg );
-				echo "</pre>";
-		}
+	foreach( func_get_args() as $arg ){
+        echo "<pre>";
+        var_dump( $arg );
+        echo "</pre>";
+	}
 }//func
 
 /**
@@ -715,7 +954,7 @@ function aryRearrange( ){
 }//argRearrange
 
 /**
- * 数组重排
+ * 数组重排(uncert = un certain 不确定参数)
  * 将给定参数中的数组元素进行重排, 拥有相同键名的元素,以索引数组的形式
  * 组织到一起, 之前的键名作为此索引属组的键名
  * 适用于二维数组作为参数
