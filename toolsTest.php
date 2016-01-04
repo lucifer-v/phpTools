@@ -152,8 +152,7 @@ dumpf($ary, "1", 4, "hello",  array('name'=>'lucifer'));
 //dumpf($hCateSet2);
 ##排除家电
 //$hCateSet2 = hHirarchify($cateSet2, 0, 0, array(2), array('level'=>'rank', 'pid'=>'cate_pid', 'id'=>'cate_id') );
-//dumpf($hCateSet2);
-**/
+//dumpf($hCateSet2);  **/
 
 /** 17. vHirarchify 
 #模拟一般情况下的无限分类
@@ -169,8 +168,8 @@ dumpf($ary, "1", 4, "hello",  array('name'=>'lucifer'));
 		array( 'id'=>9, 'pid'=>3, 'name'=>'军事')
  );
 ##默认形式
-//$vCateSet = vHirarchify($cateSet);
-//dumpf($vCateSet);
+$vCateSet = vHirarchify($cateSet);
+dumpf($vCateSet);
 ##排除书籍
 //$vCateSet = vHirarchify($cateSet, 0, 0, array(3));
 //dumpf($vCateSet);
@@ -475,3 +474,67 @@ echo getMicrotime(), "<br />";**/
   $optFrom = 'C';  $optTo = 'C';
  dumpf( buildInCondiStr('char', $optsAry, $optFrom, $optTo) );
  **/
+
+ /* 32. isReal() & boolStr() 
+$real1 = '.123';
+$real2 = '1.23';
+$real3 = '123';
+$str1 = '11dd3';
+$str2 = '1.2dd';
+echo "是否是实数<br />";
+echo $real1." : ", boolStr( isReal($real1) ), "<br />";
+echo $real2." : ", boolStr( isReal($real2) ), "<br />";
+echo $real3." : ", boolStr( isReal($real3) ), "<br />";
+echo $str1." : ", boolStr( isReal($str1) ), "<br />";
+echo $str2." : ", boolStr( isReal($str2) ), "<br />";
+*/
+
+/* 33. timePadZero() 
+$morh_1 = "6";
+echo $morh_1, "-->", timePadZero( $morh_1 ), "<br />";
+$morh_2 = "12";
+echo $morh_2, "-->", timePadZero( $morh_2 ), "<br />";
+*/
+
+/* 34. eqThenSelected()s
+echo eqThenSelected( 'hello', 'hello' );
+ */
+
+ /* 35. bitmaskEqThenChecked 
+ echo "total bimask is 75 = 01001011<br />";
+ echo '1', ' : ', bitmaskEqThenChecked( 75, 1 ), "<br />"; 
+ echo '2', ' : ', bitmaskEqThenChecked( 75, 2 ), "<br />"; 
+ echo '4', ' : ', bitmaskEqThenChecked( 75, 4 ), "<br />"; 
+ echo '8', ' : ', bitmaskEqThenChecked( 75, 8 ), "<br />"; 
+ echo '16', ' : ', bitmaskEqThenChecked( 75, 16 ), "<br />"; 
+ echo '32', ' : ', bitmaskEqThenChecked( 75, 32 ), "<br />"; 
+ echo '64', ' : ', bitmaskEqThenChecked( 75, 64 ), "<br />"; 
+ echo '128', ' : ', bitmaskEqThenChecked( 75, 128 ), "<br />";
+ */
+
+/*36. hasThenChecked
+$ball = ['football', 'baseball', 'basketball'];
+$delimiter =  '+';
+$ballStr = implode($ball, $delimiter);
+echo "All balls: ", $ballStr, "<br />";
+echo " football is in : ", hasThenChecked( $ballStr, 'football', $delimiter ), "<br />";
+echo "golf is in : ", hasThenChecked( $ballStr, 'golf', $delimiter ), "<br />";
+*/
+
+/* 37. emptyThenPrint
+$salary1 = '￥1111';
+$salary2 = "";
+echo 'salary1 = ' . emptyThenPrint( $salary1, '尚未录入' ), "<br />";
+echo 'salary2 = ' . emptyThenPrint( $salary2, '尚未录入' ), "<br />";
+ */
+
+/* 38. multiJoinAryElements() 
+$assocAry = array( 'name'=>'snow', 'age'=>'23', 'skill'=>array('eat', 'sleep', 'laugh','run','hit'),
+		'lover'=>array('lucy','hanmeimei','lily','kate'), 'language'=>array('english', 'chinese'));
+//将skill与lover组合成由'+' 号连接的字符串, language保持原样
+$newAry = multiJoinAryElements($assocAry, array('lover', 'name', 'skill'), '+');
+dumpf( $newAry ); */
+
+/* 39.  turnPartsToWhole
+$ary = array('name'=>['tom', 'lily', 'lucy', 'jack'],'age'=>[14, 15, 12, 22], 'sex'=>['male', 'female', 'female', 'male']);
+dumpf( turnPartsToWhole( $ary ) ); */
