@@ -21,6 +21,8 @@
 3.	getMicrotime()
 4.	getIntMicrotime()
 5.	timePadZero( $_mOrh )
+6.	getTwoEndFromIso8601datelist( _datelist, $_separator=";" )
+7.	parseDatelistToRangeSet( $_dateList, $_joinStr="to", $_separator=";" )
 
 ##SQL语句处理
 1. buildInCondiStr( $_fieldName,$_optsAry,$_optFrom, $_optTo )

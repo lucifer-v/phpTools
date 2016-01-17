@@ -9,6 +9,8 @@
 6. 上次修改时间:2016/01/04
 
 ##ChangeLogs
+14. [2016/01/17 14:30]
+增加了两个处理日期的函数: getTwoEndFromIso8601datelist()、parseDatelistToRangeSet()
 13. [2016/01/04 22:51]
 将getBasename()更名为getFullnam(),lucius文件名规范：
 如文件名:lecture.doc

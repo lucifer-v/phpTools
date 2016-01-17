@@ -538,3 +538,14 @@ dumpf( $newAry ); */
 /* 39.  turnPartsToWhole
 $ary = array('name'=>['tom', 'lily', 'lucy', 'jack'],'age'=>[14, 15, 12, 22], 'sex'=>['male', 'female', 'female', 'male']);
 dumpf( turnPartsToWhole( $ary ) ); */
+
+/*40. getTwoEndFromIso8601datelist()
+$datelist = "2016-01-12;2016-02-21;2016-01-11;2016-01-01;2016-01-22;2015-02-11";
+$retVal = getTwoEndFromIso8601datelist( $datelist );
+dumpf($retVal);*/
+
+/*parseDatelistToRangeSet()*/
+$datelist1 = "2016-01-12;2016-02-21;2016-03-21;2016-01-01;2016-01-22";
+$datelist1 = "2016-01-01;2016-01-02;2016-01-03;2016-01-05;2016-01-06;2016-01-08;".
+						"2016-01-10;2016-05-02;2016-05-03";
+dumpf( parseDateListToRangeSet( $datelist1 ) );

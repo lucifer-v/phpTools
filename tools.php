@@ -1,5 +1,106 @@
 <?php
 /**
+ * 将给定值与目标值项比较，以决定是否输出checked="checked"字符串
+ * @date 2016/01/12 11:26
+ * @apply 表单显示处理函数(主要用于input[type=radio])
+ *
+ * @param $_targetVal {String} 待比较的字符串
+ * @param $_givenVal  {String} 给定的字符串
+ * @return string {String} 如果相等，则返回选中标志，否则返回空字符串
+ */
+function eqThenChecked( $_targetVal, $_givenVal){
+    if( $_targetVal == $_givenVal ){
+        return 'checked="checked"';
+    }
+    return "";
+}//func
+
+/**
+ * 将给定值与目标值相比较，以决定是否输出空
+ * @date 2016/01/12 11:21
+ * @apply 表单显示处理函数
+ *
+ * @param $_targtVal {String} 待比较的字符串
+ * @param $_givenVal {String} 给定字符串
+ * @return string    {String}  如果相等，则返回空字符串，否则返回给定的字符串
+ */
+function eqThenPrintEmpty( $_targetVal, $_givenVal ){
+    if( $_targetVal == $_givenVal ){
+        return "";
+    }
+    return $_givenVal;
+}//func
+
+#### todo
+/**
+ * @description 向后截取路径的后面第n截，以获取相对路径
+ * @date 2016/01/05
+ *
+ * @param $_path 路径字符串
+ * @param $_sectionNum 待截取的段数
+ * @return 返回所截取的相对路径
+ */
+function truncatePathFromEnd( $_path, $_targetNum ){
+    $separator = '/';
+    $_path = trim( str_replace('//', $separator, $_path), $separator) ;
+
+    $sectionSet = explode($separator, $_path);
+    $sectionNum = count( $sectionSet );
+
+    if( $sectionNum < $_targetNum ){
+        return $_path;
+    }
+
+    //否则，丢弃一部分
+    $throwNum = $sectionNum - $_targetNum;
+
+    for($i = 0; $i < $throwNum; $i++){
+        array_shift( $sectionSet );
+    }
+
+    return implode($separator, $sectionSet);
+}//func
+
+/**
+ * @description 将文件从临时文件夹，移动到指定文件夹，并以指定层次的子目录结构保存
+ * @date 2016/01/05 15:03
+ *
+ * @param $_tempPath
+ * @param $_saveAbsDir  保存的绝对路径
+ * @param array $_childDir
+ * @return 图片保存的绝对路径
+ */
+function moveFileTo( $_tempAbsPath,$_saveAbsDir,$_childDir = array('Y','m','d') ){
+
+    $_tempAbsPath = trim( str_replace('\\', '/', $_tempAbsPath), '/');
+    $_saveAbsDir = trim( str_replace('\\', '/', $_saveAbsDir), '/');    //保存文件的绝对路径
+
+    $fileFullName = getFullname( $_tempAbsPath );
+
+    if( empty($_childDir) ){
+        $savePath = $_saveAbsDir.'/'.$fileFullName;
+        @rename( $_tempAbsPath, $savePath );
+    }else{      //按子文件夹
+        $curTime = time();
+        $saveDir = $_saveAbsDir;
+
+        foreach($_childDir as $subDir){
+            $saveDir .= '/'.date("{$subDir}", $curTime);
+            if( file_exists($saveDir) ){
+                continue;
+            }
+            @mkdir( $saveDir );
+        }//foreach
+
+        $savePath = $saveDir.'/'.$fileFullName;
+        @rename( $_tempAbsPath, $savePath );
+    }//else
+
+    return $savePath;
+
+}//moveFileTo
+
+/**
  * 检测字符串是否全部是utf8中文字编码(且不能为空)
  * @date 2015/12/22 09:56
  * @param $_str 待检测字符串
@@ -543,6 +644,77 @@ function datestrf( $_datestr, $_delim = '/'){
 		return false;
 }//datestrf
 
+/**
+ * @description 得到一个日期ISO601日期列表中的'最大日期'和'最小日期'字符串
+ * @date 2016/01/17 14:30
+ * @apply 求出能够囊括所有给定的日历散列值的最小日期范围
+ *
+ * @param _dataList {string} 日期集合字符串
+ * @param _separator {string=";"} 日期集合字符串中单个日期字符串的分隔符
+ * @return {Assoc Ary} retVal['min'] 最小日期字符串
+ *											   retVal['max'] 最大日期字符串
+ */
+function getTwoEndFromIso8601datelist( $_dateList, $_separator = ';'){
+		
+		$dateAry = explode( $_separator, $_dateList );
+		$len  = count( $dateAry );
+		if( $len < 1 ){
+				return array();
+		}elseif( $len == 1 ){
+				return array("min" => $dateAry[0], "max" => $dateAry[0]);
+		}
+		
+		sort( $dateAry );
+		return array('min' => array_shift($dateAry), "max" => array_pop($dateAry));
+}//func
+
+/**
+  * @description 将一些列离散的ISO8601日期字符串经可能多地使用日期范围表示
+  * @date 2016/01/17 14:30
+  * @apply 缩短日期范围的显示
+  *
+  * @param _dateList 待处理的iso8601日期字符串列表字符串
+  * @param _joinStr {string="to"} 连接连续日期段的开始和末尾日期的字符串
+  * @param _separator {string=";"} 参数_dateList所代表的日期列表字符串的分隔符
+  * @return {Assoc Ary} 没个元素表示一个时间段(孤立日期单独作为一个元素)
+  */
+function parseDatelistToRangeSet( $_dateList, $_joinStr = "to", $_separator = ";" ){
+		$dateAry = explode( $_separator, $_dateList );
+		$dateRange = array();
+
+		sort( $dateAry );			//升序排序
+		$counter = 0;
+		for($i = 0, $len = count( $dateAry ); $i < $len; $i++){
+				if( 0 == $i ){		//第一个元素
+						$startDate = $prevDate = $dateAry[ $i ];
+						continue;
+				}
+
+				$curDate = $dateAry[ $i ];
+				if( date("Y-m-d", strtotime("{$prevDate} +1 day") ) == $curDate ){		//时间是否连续
+						$prevDate = $curDate;
+				}else{		//时间不连续了
+						if( $startDate == $prevDate ){		//如果是孤立的一天
+								$dateRange[ $counter++ ]  = $startDate;
+						}else{
+								$dateRange[ $counter++ ] = "{$startDate} {$_joinStr} {$prevDate}";
+						}
+						$startDate = $prevDate = $curDate;
+				}//else
+
+				//如果最后一个日期属于一个连续时间范围内
+				if( $i == $len - 1 ){
+						if( $startDate == $prevDate ){		//如果是孤立的一天
+								$dateRange[ $counter++ ]  = $startDate;
+						}else{
+								$dateRange[ $counter++ ] = "{$startDate} {$_joinStr} {$prevDate}";
+						}
+				}//if
+		}//for
+
+		return $dateRange;
+}//func
+
 ########### 其他工具 ############
 /**  交换两个变量的值 **/
 function swap(&$_var1, &$_var2){
@@ -671,7 +843,7 @@ function getFullname($_uri){
 /***
  * 如果在字符串$_haystack中找到了子字符串$_needle，那么返回'checked="checked"'，否则返回""
  * @date 2015/12/28
- * @apply 用于模版中的复选框/单选框选中， 进行字符串试的匹配
+ * @apply 用于模版中的[复选框]/单选框选中， 进行字符串试的匹配
  *
  * @param $_haystack
  * @param $_needle
@@ -812,6 +984,7 @@ function turnPartsToWhole( $_assocAry ){
 
 /***
  * 将给定数组中，指定字段集(键集)对应的元素为数组的，将此数组的元素以某个分隔符连接起来
+ * 如果给定的数据中没有对应字段，则在数据中添加此字段，并将值设置为""
  * @date 2015/12/28 13:03
  * @modify 2015/12/29 11:09
  * @apply ajax提交时，对表单复选框的值进行处理
