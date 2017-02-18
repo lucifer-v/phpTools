@@ -1,6 +1,8 @@
 {
 	"name":"lucifer-v/phpTools",
-	"psr-4":{
-		"vendor\\":""
+	"autoload":{
+		"psr-4":{
+			"FuncUtil\\":"lib/FuncUtil/"
+		}
 	}
 }
