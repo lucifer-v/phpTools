@@ -1,3 +1,6 @@
 {
-	"name":"lucifer-v/phpTools"
+	"name":"lucifer-v/phpTools",
+	"psr-4":{
+		"vendor\\":""
+	}
 }
