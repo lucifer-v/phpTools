@@ -1,8 +1,7 @@
 {
-	"name":"lucifer-v/phpTools",
-	"autoload":{
-		"psr-4":{
-			"FuncUtil\\":"lib/FuncUtil/"
-		}
+	"name":"lucifer-v/php-tools",
+	"description":" A collection of function as tools for PHP development ",
+	"require":{
+		"php":"^5.3.3 || ^7.0"
 	}
 }
